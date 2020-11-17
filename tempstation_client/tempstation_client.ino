@@ -5,8 +5,8 @@
 
 #include "DHT.h"
 
-#define DHTPIN 23
-#define GASENABLEPIN 22
+#define DHTPIN 2
+#define GASENABLEPIN 5
 // řekneme, že senzor je typu DHT-22 
 #define DHTTYPE DHT11 
 
@@ -68,8 +68,8 @@ void MQTTConnect(){
 int get_gas_value()
 {
   digitalWrite(GASENABLEPIN, HIGH);
-  delay(10000); //preheat to get at least +- accurate values
-  int val = analogRead(4);
+  delay(20000); //preheat to get at least +- accurate values
+  int val = analogRead(A0);
   Serial.println(val);
   digitalWrite(GASENABLEPIN, LOW);
   return val; //avg = 2500 (max 3000), problem  is > 3500
@@ -83,7 +83,7 @@ void callback(char* topic, byte* payload, unsigned int len)
     msg[i] = payload[i];
   }
   msg[len] = '\0';
-  char *feedback = (char*)malloc(sizeof(char)*5); //max value from humidity and temp is 100 +- and 4095 from gas sensor
+  char *feedback = (char*)malloc(sizeof(char)*5); //max value from humidity and temp is 100 
   const char * publish_topic;
   int value=0;
   if(strcmp("gas", msg) == 0)
@@ -138,7 +138,7 @@ void setup() {
   Serial.begin(9600);   
   pinMode(DHTPIN, INPUT_PULLUP);
   pinMode(GASENABLEPIN,OUTPUT); //gas enable
-  pinMode(4,INPUT); //gas value
+  pinMode(A0,INPUT); //gas value
   
   WiFiConnect();
   MQTTConnect();
@@ -152,7 +152,7 @@ void setup() {
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  /*// put your main code here, to run repeatedly:
   Serial.print("Vlhkost: ");                
   Serial.print(dht.readHumidity());
   Serial.print(" %, Teplota: ");
@@ -163,5 +163,6 @@ void loop() {
   delay(1000);
   digitalWrite(22, HIGH);*/
   // počkáme 2s před opakováním měření
-  delay(1000);                     
+  client.loop(); //wait for subscribed topics
+  delay(100); // delay to save power             
 }
