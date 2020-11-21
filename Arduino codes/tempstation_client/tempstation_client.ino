@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "ESP8266WiFi.h"  // Enables the ESP8266 to connect to the local network (via WiFi)
 #include "PubSubClient.h" // Connect and publish to the MQTT broker.h"  // Enables the ESP8266 to connect to the local network (via WiFi)
-#include "PubSubClient.h" // Connect and publish to the MQTT broker
 
 #include "DHT.h"
 
@@ -20,7 +19,7 @@ const char* wifi_password = "12345678"; //Such strong!
 const char* mqtt_server = "192.168.0.105";  // IP of the MQTT broker = Raspberry
 const char* temp_publish_topic = "home/livingroom/temp"; // for rcv commands
 const char* hum_publish_topic = "home/livingroom/hum"; //for feedback that everything was correct
-const char* gas_publish_topic = "home/livingroom/dimmer";
+const char* gas_publish_topic = "home/livingroom/gas";
 const char* request_subscribe_topic = "home/livingroom/tempstation";
 
 const char* mqtt_username = "jaberan"; // MQTT username
@@ -68,7 +67,7 @@ void MQTTConnect(){
 int get_gas_value()
 {
   digitalWrite(GASENABLEPIN, HIGH);
-  delay(20000); //preheat to get at least +- accurate values
+  delay(5000); //preheat to get at least +- accurate values
   int val = analogRead(A0);
   Serial.println(val);
   digitalWrite(GASENABLEPIN, LOW);
