@@ -1,13 +1,16 @@
 import paho.mqtt.client as paho
 import time
-
-
+import InfluxBridge
+import sys
 # broker="192.168.0.105"
 # port=1883
 
+
 class TempstationPublisher:
+    """
+    Class publishes requests via MQTT to the temperature station.
+    """
     def __init__(self):
-        self.temp = 0
         self.broker = "192.168.0.105"
         self.port = 1883
         self.topic = "home/livingroom/tempstation"
@@ -21,8 +24,9 @@ class TempstationPublisher:
         self.client.subscribe("home/livingroom/hum")
         self.client.subscribe("home/livingroom/gas")
 
-    def on_publish(self, client, userdata, result):  # create function for callback
-        print("data published")
+    # Callback function for mqtt
+    def on_publish(self, client, userdata, result):
+        sys.stderr.write("data published")
 
     def request_temperature(self):
         self.client.reconnect()
@@ -36,12 +40,22 @@ class TempstationPublisher:
         self.client.reconnect()
         self.client.publish(self.topic, "gas")
 
+    def continuous_publishing(self, period=600):
+        while True:
+            self.request_temperature()
+            self.request_humidity()
+            time.sleep(period)
+
+
 class TempstationSubscriber:
+    """
+    Subscribes to MQTT temperature station.
+    """
     def __init__(self):
         self.temp = 0
         self.hum = 0
         self.gas = 0
-
+        self.bridge = InfluxBridge.InfluxBridge()
         self.broker = "192.168.0.105"
         self.port = 1883
 
@@ -50,6 +64,7 @@ class TempstationSubscriber:
 
         self.client.connect(self.broker, self.port)  # establish connection
 
+    # MQTT client can disconnect after timeout - this automatically reconnects him and make him subscribe to appropriate topics
     def reconnect(self):
         self.client.reconnect()
         self.client.on_message = self.on_message
@@ -57,7 +72,8 @@ class TempstationSubscriber:
         self.client.subscribe("home/livingroom/hum")
         self.client.subscribe("home/livingroom/gas")
 
-    def on_message(self, client, userdata, message):  # create function for callback
+    # MQTT incoming message handler
+    def on_message(self, client, userdata, message):
         if message.topic == "home/livingroom/temp":
             self.process_temp(message)
         elif message.topic == "home/livingroom/hum":
@@ -66,19 +82,19 @@ class TempstationSubscriber:
             self.process_gas(message)
 
     def process_temp(self, message):
-        # TODO ulozit do db
+        self.bridge.store_data("temperature", message.payload.decode("utf-8"))
         # TODO pripadne pingnout RulerMastera
-        print("Temperature is:" + str(message.payload))
+        sys.stderr.write("Temperature is:" + message.payload.decode("utf-8"))
 
     def process_hum(self, message):
-        # TODO ulozit do db
+        self.bridge.store_data("humidity", message.payload.decode("utf-8"))
         # TODO pripadne pingnout RulerMastera
-        print("Humidity is:" + str(message.payload))
+        sys.stderr.write("Humidity is:" + message.payload.decode("utf-8"))
 
     def process_gas(self, message):
-        # TODO ulozit do db
+        self.bridge.store_data("gas", message.payload.decode("utf-8"))
         # TODO pripadne pingnout RulerMastera
-        print("Gas value is:" + str(message.payload))
+        sys.stderr.write("Gas value is:" + message.payload.decode("utf-8"))
 
     def run(self):
         self.reconnect()

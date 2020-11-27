@@ -102,7 +102,7 @@ void callback(char* topic, byte* payload, unsigned int len)
   }
   else
   {
-    //pass
+    return;
   }
   sprintf(feedback, "%d", value); //int to string
   publishFeedback(feedback, (char *)publish_topic);
