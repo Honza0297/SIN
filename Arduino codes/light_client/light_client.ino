@@ -33,7 +33,7 @@ uint8_t currentState = commTurnOff;
 
 // WiFi settings - hardcoded ssid and password. Zero security, 100 % simplicity. 
 const char* ssid = "Tenda_F1C9E0";                
-const char* wifi_password = "12345678"; 
+const char* wifi_password = "wifi*31415926"; 
 
 // MQTT settings
 const char* mqtt_server = "192.168.0.105";  // IP of the MQTT broker = Raspberry
