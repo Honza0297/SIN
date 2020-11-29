@@ -9,8 +9,14 @@ import time
 from .forms import RGBForm, DimmerForm
 from .lights import LEDPublisher
 
+# Generally speaking, global variable is not neccessary here
+# but it simplifies things if there were two or more views (in the future?)
 pub = LEDPublisher()
 
+ """
+ This view controlls main SIN dashboard and makes actions according to the data
+ from forms. 
+ """
 def SINView(request, *args, **kwargs):
 	template_name="templates/home.html"
 
@@ -21,11 +27,10 @@ def SINView(request, *args, **kwargs):
 			if form_rgb.is_valid():
 				data = form_rgb.cleaned_data
 				print("RGB form data:",data)
+				# Sending MQTT command here
 				pub.rgb_command("on" if data["state"] else "off")
 				time.sleep(0.1)
 				pub.rgb_command(data["color"])
-				#TODO tady volat MQTT
-				# TODO test jestli by to neslo udelat pres GET? Aby se to nemuselo aktualizovat
 		elif "dimmer" in request.POST:
 			form_rgb = RGBForm()
 			form_dimmer = DimmerForm(request.POST)
@@ -39,6 +44,5 @@ def SINView(request, *args, **kwargs):
 
 
 	ctx = {"form_rgb": form_rgb,
-		"form_dimmer": form_dimmer,
-		"num":123}
+		"form_dimmer": form_dimmer}
 	return render(request, template_name, ctx)

@@ -37,6 +37,9 @@
     </div>
     
     <script>
+    	/* Table creation,
+    	There are two y axes, one for temp and one for humidity.
+    	And there are also two datasets or x-axes data for temp and hum as well*/
     var dataObj={
         type: 'line',
         data: {
@@ -97,11 +100,10 @@
     </script>
 <script>
 
-// websocket scripts
+// websocket logic
 var loc = window.location
 
-//var formData = $("#form")
-//var msg_input = $("#id_message")
+//getting address of endpoint 
 var wsStart = "ws://"
 if (loc.protocol == "https:")
 {
@@ -113,13 +115,9 @@ var data = null
 
 var socket = new ReconnectingWebSocket(endpoint)
 
+// when message arrives...
 socket.onmessage = function(e){
 	
-	/*var el = document.createElement("p")
-	el.innerHTML = e.data
- 	document.getElementById("body").appendChild(el)
-	console.log("message", e)
-		*/
 	var recv_data=JSON.parse(e.data);
 	console.log(recv_data)
 	var i;
@@ -131,31 +129,18 @@ socket.onmessage = function(e){
 	  	dataObj["data"]['datasets'][1]['data'].push(recv_data["humidity"][i])
 	  }
 	} 
-	//dataObj["data"]["labels"] = dataObj["data"]["labels"].concat(recv_data["time"])
-	//dataObj["data"]['datasets'][0]['data'] = dataObj["data"]['datasets'][0]['data'].concat(recv_data["value"])
 	
 	window.myLine.update();
-	/*dataObjNew=dataObj['data']['datasets'][0]['data'];
-    dataObjNew.shift();
-    dataObjNew.push(recv_data["value"]);
-    dataObj['data']['datasets'][0]['data']=dataObjNew;
-	window.myLine.update();*/
+	
 	}
-
+// When socket is opened - (re)load of the page
 socket.onopen = function(e){
 	console.log("open", e)
 	if (data  === null)
 	{ 
 		socket.send("Initial data needed!")
     } 
-	/*formData.submit(function(event){
-		event.preventDefault()
-		var msg_text = msg_input.val()
-		//var formDataSerialized = formData.serialize()
-		var final_data = {"message": msg_text}
-		socket.send(JSON.stringify(final_data))
-		formData[0].reset()
-	})*/
+	
 }
 socket.onerror =function(e){console.log("error", e)}
 socket.onclose =function(e){console.log("close", e)}

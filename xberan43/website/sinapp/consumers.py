@@ -1,13 +1,17 @@
 import asyncio
 import json
 from django.contrib.auth import get_user_model
-#from channels.consumer import AsyncConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .InfluxBridge import InfluxBridge
 
 from .models import *
 
+"""
+Websocket consumer controlls data flow from InfluxDB using Django channels. 
+
+
+"""
 class SINConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.groupname='dashboard'
@@ -15,11 +19,6 @@ class SINConsumer(AsyncWebsocketConsumer):
 			self.groupname,
 			self.channel_name,)
 		await self.accept()
-
-		#await self.send({"type":"websocket.accept"})#accept()
-		#await asyncio.sleep(3)
-		#await self.send({"type":"websocket.send",
-		#	"text":"dummy data"})
 
 	async def receive(self, text_data):
 
@@ -30,7 +29,6 @@ class SINConsumer(AsyncWebsocketConsumer):
 			return
 
 		print("recv", text_data)
-		#await self.send(text_data=json.dumps({'value':"Pokus pokusovaty"}))
 		datapoint = json.loads(text_data)
 
 		
@@ -48,8 +46,11 @@ class SINConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps(valOther))
 	 
 	async def new_message(self, event):
-		print("tady nactu hooodne dat")
+		print("Load init data")
 
+	# Initial data request when the page is (re)loaded. 
+	# In short: gettig data from InfluxDB and then converting to 
+	# the strucutre of type {"time":{}, "temperature":{}, "humidity":{}}
 	async def get_initial_data(self):
 		d = InfluxBridge()
 		temp = d.get_data(measurement="temperature", fields="value", aggregation="10m")
