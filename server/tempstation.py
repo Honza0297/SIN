@@ -2,7 +2,7 @@ import paho.mqtt.client as paho
 import time
 import InfluxBridge
 import sys
-# broker="192.168.0.105"
+# broker="192.168.0.108"
 # port=1883
 
 
@@ -11,7 +11,7 @@ class TempstationPublisher:
     Class publishes requests via MQTT to the temperature station.
     """
     def __init__(self):
-        self.broker = "192.168.0.105"
+        self.broker = "192.168.0.108"
         self.port = 1883
         self.topic = "home/livingroom/tempstation"
 
@@ -56,7 +56,7 @@ class TempstationSubscriber:
         self.hum = 0
         self.gas = 0
         self.bridge = InfluxBridge.InfluxBridge()
-        self.broker = "192.168.0.105"
+        self.broker = "192.168.0.108"
         self.port = 1883
 
         self.client = paho.Client("TempstationSubscriber")

@@ -1,7 +1,7 @@
 import paho.mqtt.client as paho
 
 
-# broker="192.168.0.105"
+# broker="192.168.0.108"
 # port=1883
 
 # Callback function for MQTT
@@ -14,7 +14,7 @@ class LEDPublisher:
     Publisher controlling both room and RGB LED bulbs.
     """
     def __init__(self):
-        self.broker = "192.168.0.105"
+        self.broker = "192.168.0.108"
         self.port = 1883
 
         self.client = paho.Client("LEDController")

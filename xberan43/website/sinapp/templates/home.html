@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<table style="width:100%">
+  <tr>
+    <td>
+    	<h3 style="margin-left: 20%;">RGB light</h3>
+    	<form id='leftform' method='POST'> {% csrf_token %}
+			{{ form_rgb.as_p }}
+			<input type='submit' name= "rgb" class='btn btn-primary'/>
+		</form>
+		</td>
+    <td>
+    	<h3 style="position:relative; margin-right: 25%; text-align: right;"> Room light</h3>
+    	<form id='rightform' method='POST'> {% csrf_token %}
+			{{ form_dimmer.as_p }}
+			<input type='submit' name= "dimmer" class='btn btn-primary'/>
+		</form>
+	</td>
+  </tr>
+ 
+</table>
+
+
+
+
+
+{% endblock %}
+
+{% block script %}
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
+
+<div style="max-width: 900px; max-height: 400px; margin: auto;">
+        <canvas id="myChart" width=900 height=400 style="margin: auto;"></canvas>
+    </div>
+    
+    <script>
+    var dataObj={
+        type: 'line',
+        data: {
+            labels: [1,2,3],
+            datasets: [{
+                label: 'Temperature at home',
+      			yAxisID: 'L',
+                data: [0,1,0],
+                borderColor:'rgba(250, 0, 0, 0.3)',
+                backgroundColor:'rgba(250, 0, 0, 0.1)',
+            },
+            {
+                label: 'Humidity at home',
+                yAxisID: 'R',
+                data: [1,1,0],
+                borderColor:'rgba(0, 0, 255, 0.3)',
+                backgroundColor:'rgba(0, 0, 255, 0.1)',
+            },
+            ]
+        },
+        options: {
+            scales: {
+                yAxes: [
+			                {
+						        id: 'L',
+						        scaleLabel: {
+					        				display: true,
+					       					labelString: 'Temperature \[\°C\]'
+			      							},
+			        			type: 'linear',
+			       				position: 'left',
+			       				ticks: {
+						          		beginAtZero: true
+						        	   },
+						        gridLines: { color: "rgba(250, 0, 0, 0.2)" },
+			      			},
+			      			{
+						        id: 'R',
+						        scaleLabel: {
+									        display: true,
+									        labelString: 'Humidity \[\%\]',
+			      							},
+						        type: 'linear',
+						        position: 'right',
+						        ticks: {
+						          		beginAtZero: true
+						        	   },
+						        gridLines: { color: "rgba(0, 0, 250, 0.2)" },
+
+
+			      			}
+      					]
+            		}
+        		 }
+    	}
+    var ctx = document.getElementById('myChart').getContext('2d');
+    window.myLine = new Chart(ctx,dataObj );
+    </script>
+<script>
+
+// websocket scripts
+var loc = window.location
+
+//var formData = $("#form")
+//var msg_input = $("#id_message")
+var wsStart = "ws://"
+if (loc.protocol == "https:")
+{
+	wsStart = "wss://"
+}
+var endpoint = wsStart + loc.host + loc.pathname
+
+var data = null
+
+var socket = new ReconnectingWebSocket(endpoint)
+
+socket.onmessage = function(e){
+	
+	/*var el = document.createElement("p")
+	el.innerHTML = e.data
+ 	document.getElementById("body").appendChild(el)
+	console.log("message", e)
+		*/
+	var recv_data=JSON.parse(e.data);
+	console.log(recv_data)
+	var i;
+	for (i = 0; i < recv_data["time"].length; i++) {
+	  if(!dataObj["data"]["labels"].includes(recv_data["time"][i]))
+	  {
+	  	dataObj["data"]["labels"].push(recv_data["time"][i])
+	  	dataObj["data"]['datasets'][0]['data'].push(recv_data["temperature"][i])
+	  	dataObj["data"]['datasets'][1]['data'].push(recv_data["humidity"][i])
+	  }
+	} 
+	//dataObj["data"]["labels"] = dataObj["data"]["labels"].concat(recv_data["time"])
+	//dataObj["data"]['datasets'][0]['data'] = dataObj["data"]['datasets'][0]['data'].concat(recv_data["value"])
+	
+	window.myLine.update();
+	/*dataObjNew=dataObj['data']['datasets'][0]['data'];
+    dataObjNew.shift();
+    dataObjNew.push(recv_data["value"]);
+    dataObj['data']['datasets'][0]['data']=dataObjNew;
+	window.myLine.update();*/
+	}
+
+socket.onopen = function(e){
+	console.log("open", e)
+	if (data  === null)
+	{ 
+		socket.send("Initial data needed!")
+    } 
+	/*formData.submit(function(event){
+		event.preventDefault()
+		var msg_text = msg_input.val()
+		//var formDataSerialized = formData.serialize()
+		var final_data = {"message": msg_text}
+		socket.send(JSON.stringify(final_data))
+		formData[0].reset()
+	})*/
+}
+socket.onerror =function(e){console.log("error", e)}
+socket.onclose =function(e){console.log("close", e)}
+
+
+
+	
+</script>
+{% endblock %}

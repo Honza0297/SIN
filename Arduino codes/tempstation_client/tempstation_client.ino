@@ -16,7 +16,7 @@ const char* wifi_password = "12345678"; //Such strong!
 
 
 // MQTT settings
-const char* mqtt_server = "192.168.0.105";  // IP of the MQTT broker = Raspberry
+const char* mqtt_server = "192.168.0.108";  // IP of the MQTT broker = Raspberry
 const char* temp_publish_topic = "home/livingroom/temp"; // for rcv commands
 const char* hum_publish_topic = "home/livingroom/hum"; //for feedback that everything was correct
 const char* gas_publish_topic = "home/livingroom/gas";

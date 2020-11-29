@@ -10,7 +10,7 @@ class Subscriber_all:
     This class is used to subscribe to all MQTT messages. Mostly for testing.
     """
     def __init__(self):
-        broker = "192.168.0.105"
+        broker = "192.168.0.108"
         port = 1883
         self.client = paho.Client("subscriber_all_topics")
         self.client.username_pw_set("jaberan", "temderku5j")

@@ -13,7 +13,7 @@ const int bottom_cover_pin= D8;
 const int window_pin = D12;
 
 // MQTT settings
-const char* mqtt_server = "192.168.0.105";  // IP of the MQTT broker = Raspberry
+const char* mqtt_server = "192.168.0.108";  // IP of the MQTT broker = Raspberry
 const char* window_topic = "home/livingroom/window/state"; // for rcv commands
 const char* subscribe_topic = "home/livingroom/window/commands"; //for feedback that everything was correct
 const char* mqtt_username = "jaberan"; // MQTT username

@@ -6,7 +6,7 @@ import pytz
 import sys
 
 #MQTT related constants
-MQTT_ADDRESS = '192.168.0.105'
+MQTT_ADDRESS = '192.168.0.108'
 MQTT_USER = 'jaberan'
 MQTT_PASSWORD = 'temderku5j'
 MQTT_TOPIC_MAIN = "home/#"
@@ -18,7 +18,7 @@ class InfluxBridge:
     NOTE: Not fully implemented.
     """
     def __init__(self):
-        self.client = InfluxDBClient(host='192.168.0.105', port=8086)
+        self.client = InfluxDBClient(host='192.168.0.108', port=8086)
 
         # Checks of smarthome DB exists and creates/connects to it
         created = False
@@ -33,7 +33,7 @@ class InfluxBridge:
 
     # Method is used to store data into DB
     def store_data(self, measurement, value):
-        self.client = InfluxDBClient(host='192.168.0.105', port=8086)
+        self.client = InfluxDBClient(host='192.168.0.108', port=8086)
         self.client.switch_database("smarthome")
         self.client.write_points("{} value={}".format(measurement, value), database="smarthome", protocol="line")
         self.client.close()
@@ -41,7 +41,7 @@ class InfluxBridge:
     # Checks of there are any new data from last time and if there are any, it returns them aggregation by time period
     def has_changed(self, measurement, known_last_time, duration):
         tz = pytz.timezone('Europe/Prague')
-        self.client = InfluxDBClient(host='192.168.0.105', port=8086)
+        self.client = InfluxDBClient(host='192.168.0.108', port=8086)
         self.client.switch_database("smarthome")
 
         last_val = next(self.client.query("SELECT time, value FROM {} GROUP BY * ORDER BY DESC LIMIT 1".format(measurement)).get_points())

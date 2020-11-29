@@ -1,7 +1,7 @@
 import paho.mqtt.client as paho
 
 
-# broker="192.168.0.105"
+# broker="192.168.0.108"
 # port=1883
 
 def on_publish(client, userdata, result):  # create function for callback
@@ -10,7 +10,7 @@ def on_publish(client, userdata, result):  # create function for callback
 
 class LEDPublisher:
     def __init__(self):
-        self.broker = "192.168.0.105"
+        self.broker = "192.168.0.108"
         self.port = 1883
 
         self.client = paho.Client("LEDController")

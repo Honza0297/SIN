@@ -36,7 +36,7 @@ const char* ssid = "Tenda_F1C9E0";
 const char* wifi_password = "12345678"; 
 
 // MQTT settings
-const char* mqtt_server = "192.168.0.105";  // IP of the MQTT broker = Raspberry
+const char* mqtt_server = "192.168.0.108";  // IP of the MQTT broker = Raspberry
 const char* rgb_subscribe_topic = "home/livingroom/rgbled"; // for rcv commands
 const char* rgb_publish_topic = "home/livingroom/rgbledfeedback"; //for feedback that everything was correct
 const char* dim_subscribe_topic = "home/livingroom/dimmer";
