@@ -12,7 +12,7 @@
 
 // WiFi settings - hardcoded ssid and password. Zero security, 100 % simplicity. 
 const char* ssid = "Tenda_F1C9E0";                
-const char* wifi_password = "12345678"; //Such strong!
+const char* wifi_password = "wifi*31415926" 
 
 
 // MQTT settings

@@ -21,7 +21,7 @@ const char* mqtt_password = "temderku5j"; // MQTT password
 const char* clientID = "client_window"; // MQTT client ID
 
 const char* ssid = "Tenda_F1C9E0";                
-const char* wifi_password = "12345678"; 
+const char* wifi_password = "wifi*31415926"; 
 
 const bool up = true;
 const bool down = false;
